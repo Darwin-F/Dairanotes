@@ -1,6 +1,7 @@
 package main
 
 import (
+	"dairanotes/internal/controller"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -8,7 +9,14 @@ import (
 func main() {
 	r := gin.Default()
 
-	// Define a simple GET route
+	noteController := controller.NewNotesController(db)
+	noteGroup := r.Group("/notes")
+	noteGroup.GET("/", noteController.Index)
+	noteGroup.POST("/", noteController.Store)
+	noteGroup.GET("/:id", noteController.Show)
+	noteGroup.PATCH("/:id", noteController.Update)
+	noteGroup.DELETE("/:id", noteController.Destroy)
+
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Hello, World!",
