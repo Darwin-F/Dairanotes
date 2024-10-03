@@ -11,11 +11,11 @@ func main() {
 
 	noteController := controller.NewNotesController(db)
 	noteGroup := r.Group("/notes")
-	noteGroup.GET("/", noteController.GetNotes)
-	noteGroup.POST("/", noteController.CreateNote)
-	noteGroup.GET("/:id", noteController.GetNoteByID)
-	noteGroup.PATCH("/:id", noteController.UpdateNoteByID)
-	noteGroup.DELETE("/:id", noteController.DeleteNoteByID)
+	noteGroup.GET("/", noteController.Index)
+	noteGroup.POST("/", noteController.Store)
+	noteGroup.GET("/:id", noteController.Show)
+	noteGroup.PATCH("/:id", noteController.Update)
+	noteGroup.DELETE("/:id", noteController.Destroy)
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

@@ -18,7 +18,7 @@ func NewNotesController(db *sqlx.DB) *NotesController {
 	return &NotesController{bn: bn}
 }
 
-func (nc *NotesController) CreateNote(c *gin.Context) {
+func (nc *NotesController) Store(c *gin.Context) {
 	var newNote entities.Note
 
 	if err := c.BindJSON(&newNote); err != nil {
@@ -43,7 +43,7 @@ func (nc *NotesController) CreateNote(c *gin.Context) {
 	return
 }
 
-func (nc *NotesController) GetNotes(c *gin.Context) {
+func (nc *NotesController) Index(c *gin.Context) {
 	notes, err := nc.bn.Index(c.Request.Context(), 1) //TODO : get user id from token
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -55,7 +55,7 @@ func (nc *NotesController) GetNotes(c *gin.Context) {
 	c.JSON(200, notes)
 }
 
-func (nc *NotesController) GetNoteByID(c *gin.Context) {
+func (nc *NotesController) Show(c *gin.Context) {
 	noteID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(400, gin.H{
@@ -88,7 +88,7 @@ func (nc *NotesController) GetNoteByID(c *gin.Context) {
 
 }
 
-func (nc *NotesController) UpdateNoteByID(c *gin.Context) {
+func (nc *NotesController) Update(c *gin.Context) {
 	noteID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(400, gin.H{
@@ -123,7 +123,7 @@ func (nc *NotesController) UpdateNoteByID(c *gin.Context) {
 	return
 }
 
-func (nc *NotesController) DeleteNoteByID(c *gin.Context) {
+func (nc *NotesController) Destroy(c *gin.Context) {
 	noteID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(400, gin.H{
