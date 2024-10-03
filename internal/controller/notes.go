@@ -4,6 +4,7 @@ import (
 	"Dairanotes/internal/business"
 	"Dairanotes/internal/entities"
 	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
 	"strconv"
 )
 
@@ -11,7 +12,9 @@ type NotesController struct {
 	bn business.NoteBusinessInterface
 }
 
-func NewNotesController(bn business.NoteBusinessInterface) *NotesController {
+func NewNotesController(db *sqlx.DB) *NotesController {
+	noteMethods := entities.NewNoteMethods(db)
+	bn := business.NewNoteBusiness(noteMethods)
 	return &NotesController{bn: bn}
 }
 

@@ -17,7 +17,7 @@ type NoteMethods struct {
 	DB *sqlx.DB
 }
 
-func CreateNoteMethods(db *sqlx.DB) *NoteMethods {
+func NewNoteMethods(db *sqlx.DB) *NoteMethods {
 	return &NoteMethods{
 		DB: db,
 	}
