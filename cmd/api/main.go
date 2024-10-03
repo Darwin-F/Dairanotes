@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Dairanotes/internal/controller"
+	"dairanotes/internal/controller"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

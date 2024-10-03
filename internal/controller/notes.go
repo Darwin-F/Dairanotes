@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"Dairanotes/internal/business"
-	"Dairanotes/internal/entities"
+	"dairanotes/internal/business"
+	"dairanotes/internal/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"strconv"

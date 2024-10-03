@@ -1,8 +1,8 @@
 package business
 
 import (
-	"Dairanotes/internal/entities"
 	"context"
+	"dairanotes/internal/entities"
 )
 
 type NoteBusiness struct {
