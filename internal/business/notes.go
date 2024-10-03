@@ -6,11 +6,11 @@ import (
 )
 
 type NoteBusiness struct {
-	noteMethods entities.MethodsInterface
+	Methods entities.MethodsInterface
 }
 
 func NewNoteBusiness(noteMethods entities.MethodsInterface) *NoteBusiness {
-	return &NoteBusiness{noteMethods: noteMethods}
+	return &NoteBusiness{Methods: noteMethods}
 }
 
 type NoteBusinessInterface interface {
@@ -22,21 +22,21 @@ type NoteBusinessInterface interface {
 }
 
 func (n *NoteBusiness) CreateNote(ctx context.Context, note entities.Note) error {
-	return n.noteMethods.CreateNote(ctx, note)
+	return n.Methods.CreateNote(ctx, note)
 }
 
 func (n *NoteBusiness) GetNotes(ctx context.Context, userID int64) ([]entities.Note, error) {
-	return n.noteMethods.GetNotes(ctx, userID)
+	return n.Methods.GetNotes(ctx, userID)
 }
 
 func (n *NoteBusiness) GetNoteByID(ctx context.Context, noteID int64) (*entities.Note, error) {
-	return n.noteMethods.GetNoteByID(ctx, noteID)
+	return n.Methods.GetNoteByID(ctx, noteID)
 }
 
 func (n *NoteBusiness) UpdateNoteByID(ctx context.Context, noteID int64, note entities.Note) error {
-	return n.noteMethods.UpdateNoteByID(ctx, noteID, note)
+	return n.Methods.UpdateNoteByID(ctx, noteID, note)
 }
 
 func (n *NoteBusiness) DeleteNoteByID(ctx context.Context, noteID int64) error {
-	return n.noteMethods.DeleteNoteByID(ctx, noteID)
+	return n.Methods.DeleteNoteByID(ctx, noteID)
 }
