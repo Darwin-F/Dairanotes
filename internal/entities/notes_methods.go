@@ -6,11 +6,11 @@ import (
 )
 
 type MethodsInterface interface {
-	CreateNote(ctx context.Context, notes Note) error
-	GetNotes(ctx context.Context, userID int64) ([]Note, error)
-	GetNoteByID(ctx context.Context, noteID int64) (*Note, error)
-	UpdateNoteByID(ctx context.Context, noteID int64, notes Note) error
-	DeleteNoteByID(ctx context.Context, noteID int64) error
+	Store(ctx context.Context, notes Note) error
+	Index(ctx context.Context, userID int64) ([]Note, error)
+	Show(ctx context.Context, noteID int64) (*Note, error)
+	Update(ctx context.Context, noteID int64, notes Note) error
+	Destroy(ctx context.Context, noteID int64) error
 }
 
 type Methods struct {
@@ -23,7 +23,7 @@ func NewMethods(db *sqlx.DB) *Methods {
 	}
 }
 
-func (n *Methods) CreateNote(ctx context.Context, notes Note) error {
+func (n *Methods) Store(ctx context.Context, notes Note) error {
 	_, err := n.DB.ExecContext(ctx, "INSERT INTO notes (user_id, title, content) VALUES (?, ?, ?)", notes.UserID, notes.Title, notes.Content)
 	if err != nil {
 		return err
@@ -31,7 +31,7 @@ func (n *Methods) CreateNote(ctx context.Context, notes Note) error {
 	return nil
 }
 
-func (n *Methods) GetNotes(ctx context.Context, userID int64) ([]Note, error) {
+func (n *Methods) Index(ctx context.Context, userID int64) ([]Note, error) {
 	var notes []Note
 
 	rows, err := n.DB.QueryContext(ctx, "SELECT title, content FROM notes WHERE user_id = ?", userID)
@@ -53,7 +53,7 @@ func (n *Methods) GetNotes(ctx context.Context, userID int64) ([]Note, error) {
 	return notes, rows.Err()
 }
 
-func (n *Methods) GetNoteByID(ctx context.Context, noteID int64) (*Note, error) {
+func (n *Methods) Show(ctx context.Context, noteID int64) (*Note, error) {
 	var note Note
 
 	err := n.DB.QueryRowContext(ctx, "SELECT title,content  FROM notes WHERE id = ?", noteID).Scan(&note.Title, &note.Content)
@@ -64,7 +64,7 @@ func (n *Methods) GetNoteByID(ctx context.Context, noteID int64) (*Note, error) 
 	return &note, nil
 }
 
-func (n *Methods) UpdateNoteByID(ctx context.Context, noteID int64, notes Note) error {
+func (n *Methods) Update(ctx context.Context, noteID int64, notes Note) error {
 	_, err := n.DB.ExecContext(ctx, "UPDATE notes SET title = ?, content = ? WHERE id = ?", notes.Title, notes.Content, noteID)
 	if err != nil {
 		return err
@@ -73,7 +73,7 @@ func (n *Methods) UpdateNoteByID(ctx context.Context, noteID int64, notes Note) 
 	return nil
 }
 
-func (n *Methods) DeleteNoteByID(ctx context.Context, noteID int64) error {
+func (n *Methods) Destroy(ctx context.Context, noteID int64) error {
 	_, err := n.DB.ExecContext(ctx, "DELETE FROM notes WHERE id = ?", noteID)
 	if err != nil {
 		return err

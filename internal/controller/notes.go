@@ -13,7 +13,7 @@ type NotesController struct {
 }
 
 func NewNotesController(db *sqlx.DB) *NotesController {
-	noteMethods := entities.NewNoteMethods(db)
+	noteMethods := entities.NewMethods(db)
 	bn := business.NewNoteBusiness(noteMethods)
 	return &NotesController{bn: bn}
 }
@@ -28,7 +28,7 @@ func (nc *NotesController) CreateNote(c *gin.Context) {
 		return
 	}
 
-	err := nc.bn.CreateNote(c.Request.Context(), newNote)
+	err := nc.bn.Store(c.Request.Context(), newNote)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "Internal server error",
@@ -44,7 +44,7 @@ func (nc *NotesController) CreateNote(c *gin.Context) {
 }
 
 func (nc *NotesController) GetNotes(c *gin.Context) {
-	notes, err := nc.bn.GetNotes(c.Request.Context(), 1) //TODO : get user id from token
+	notes, err := nc.bn.Index(c.Request.Context(), 1) //TODO : get user id from token
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "Internal server error",
@@ -67,7 +67,7 @@ func (nc *NotesController) GetNoteByID(c *gin.Context) {
 	//TODO : get user id from token
 	//TODO : check if note belongs to user
 
-	note, err := nc.bn.GetNoteByID(c.Request.Context(), noteID)
+	note, err := nc.bn.Show(c.Request.Context(), noteID)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "Internal server error",
@@ -108,7 +108,7 @@ func (nc *NotesController) UpdateNoteByID(c *gin.Context) {
 	//TODO : get user id from token
 	//TODO : check if note belongs to user
 
-	err = nc.bn.UpdateNoteByID(c.Request.Context(), noteID, updatedNote)
+	err = nc.bn.Update(c.Request.Context(), noteID, updatedNote)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "Internal server error",
@@ -135,7 +135,7 @@ func (nc *NotesController) DeleteNoteByID(c *gin.Context) {
 	//TODO : get user id from token
 	//TODO : check if note belongs to user
 
-	err = nc.bn.DeleteNoteByID(c.Request.Context(), noteID)
+	err = nc.bn.Destroy(c.Request.Context(), noteID)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "Internal server error",

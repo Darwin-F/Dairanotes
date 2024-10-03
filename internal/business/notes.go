@@ -14,29 +14,29 @@ func NewNoteBusiness(noteMethods entities.MethodsInterface) *NoteBusiness {
 }
 
 type NoteBusinessInterface interface {
-	CreateNote(ctx context.Context, note entities.Note) error
-	GetNotes(ctx context.Context, userID int64) ([]entities.Note, error)
-	GetNoteByID(ctx context.Context, noteID int64) (*entities.Note, error)
-	UpdateNoteByID(ctx context.Context, noteID int64, note entities.Note) error
-	DeleteNoteByID(ctx context.Context, noteID int64) error
+	Store(ctx context.Context, note entities.Note) error
+	Index(ctx context.Context, userID int64) ([]entities.Note, error)
+	Show(ctx context.Context, noteID int64) (*entities.Note, error)
+	Update(ctx context.Context, noteID int64, note entities.Note) error
+	Destroy(ctx context.Context, noteID int64) error
 }
 
-func (n *NoteBusiness) CreateNote(ctx context.Context, note entities.Note) error {
-	return n.Methods.CreateNote(ctx, note)
+func (n *NoteBusiness) Store(ctx context.Context, note entities.Note) error {
+	return n.Methods.Store(ctx, note)
 }
 
-func (n *NoteBusiness) GetNotes(ctx context.Context, userID int64) ([]entities.Note, error) {
-	return n.Methods.GetNotes(ctx, userID)
+func (n *NoteBusiness) Index(ctx context.Context, userID int64) ([]entities.Note, error) {
+	return n.Methods.Index(ctx, userID)
 }
 
-func (n *NoteBusiness) GetNoteByID(ctx context.Context, noteID int64) (*entities.Note, error) {
-	return n.Methods.GetNoteByID(ctx, noteID)
+func (n *NoteBusiness) Show(ctx context.Context, noteID int64) (*entities.Note, error) {
+	return n.Methods.Show(ctx, noteID)
 }
 
-func (n *NoteBusiness) UpdateNoteByID(ctx context.Context, noteID int64, note entities.Note) error {
-	return n.Methods.UpdateNoteByID(ctx, noteID, note)
+func (n *NoteBusiness) Update(ctx context.Context, noteID int64, note entities.Note) error {
+	return n.Methods.Update(ctx, noteID, note)
 }
 
-func (n *NoteBusiness) DeleteNoteByID(ctx context.Context, noteID int64) error {
-	return n.Methods.DeleteNoteByID(ctx, noteID)
+func (n *NoteBusiness) Destroy(ctx context.Context, noteID int64) error {
+	return n.Methods.Destroy(ctx, noteID)
 }
