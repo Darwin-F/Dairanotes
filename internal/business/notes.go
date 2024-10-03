@@ -17,7 +17,7 @@ type NoteBusinessInterface interface {
 	CreateNote(ctx context.Context, note entities.Note) error
 	GetNotes(ctx context.Context, userID int64) ([]entities.Note, error)
 	GetNoteByID(ctx context.Context, noteID int64) (*entities.Note, error)
-	UpdateNoteByID(ctx context.Context, noteID int64) error
+	UpdateNoteByID(ctx context.Context, noteID int64, note entities.Note) error
 	DeleteNoteByID(ctx context.Context, noteID int64) error
 }
 
