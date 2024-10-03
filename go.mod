@@ -2,7 +2,10 @@ module dairanotes
 
 go 1.23.1
 
-require github.com/gin-gonic/gin v1.10.0
+require (
+	github.com/gin-gonic/gin v1.10.0
+	github.com/jmoiron/sqlx v1.4.0
+)
 
 require (
 	github.com/bytedance/sonic v1.12.3 // indirect
