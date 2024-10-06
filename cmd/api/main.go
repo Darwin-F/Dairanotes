@@ -18,6 +18,7 @@ func main() {
 	}
 
 	noteController := controller.NewNotesController(db)
+	userController := controller.NewUsersController(db)
 
 	noteGroup := r.Group("/notes")
 	noteGroup.GET("/", noteController.Index)
@@ -25,6 +26,11 @@ func main() {
 	noteGroup.GET("/:id", noteController.Show)
 	noteGroup.PATCH("/:id", noteController.Update)
 	noteGroup.DELETE("/:id", noteController.Destroy)
+
+	userGroup := r.Group("/users")
+	userGroup.POST("/", userController.Store)
+	userGroup.PATCH("/:id", userController.Update)
+	userGroup.DELETE("/:id", userController.Destroy)
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
