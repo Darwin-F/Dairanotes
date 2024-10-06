@@ -2,6 +2,8 @@ package main
 
 import (
 	"dairanotes/internal/controller"
+	"dairanotes/internal/database"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -9,7 +11,14 @@ import (
 func main() {
 	r := gin.Default()
 
+	db, err := database.ConnectDatabase()
+	if err != nil {
+		fmt.Println("Failed to connect to database")
+		return
+	}
+
 	noteController := controller.NewNotesController(db)
+
 	noteGroup := r.Group("/notes")
 	noteGroup.GET("/", noteController.Index)
 	noteGroup.POST("/", noteController.Store)
