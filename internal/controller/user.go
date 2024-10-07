@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"dairanotes/internal/business"
 	"dairanotes/internal/entities"
 	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
 	"strconv"
 )
 
@@ -11,7 +13,7 @@ type UserController struct {
 }
 
 func NewUserController(db *sqlx.DB) *UserController {
-	methods := entities.NewMethods(db)
+	methods := entities.NewUsersMethods(db)
 	bu := business.NewUserBusiness(methods)
 	return &UserController{bu: bu}
 }

@@ -13,7 +13,7 @@ type NotesController struct {
 }
 
 func NewNotesController(db *sqlx.DB) *NotesController {
-	methods := entities.NewMethods(db)
+	methods := entities.NewNotesMethods(db)
 	bn := business.NewNoteBusiness(methods)
 	return &NotesController{bn: bn}
 }
