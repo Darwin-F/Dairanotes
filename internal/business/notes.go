@@ -6,10 +6,10 @@ import (
 )
 
 type NoteBusiness struct {
-	methods entities.MethodsInterface
+	methods entities.NotesMethodsInterface
 }
 
-func NewNoteBusiness(noteMethods entities.MethodsInterface) *NoteBusiness {
+func NewNoteBusiness(noteMethods entities.NotesMethodsInterface) *NoteBusiness {
 	return &NoteBusiness{methods: noteMethods}
 }
 
