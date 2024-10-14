@@ -1,6 +1,7 @@
 package main
 
 import (
+	"dairanotes/internal/auth"
 	"dairanotes/internal/controller"
 	"dairanotes/internal/database"
 	"fmt"
@@ -17,10 +18,14 @@ func main() {
 		return
 	}
 
+	authController := controller.NewAuthController(db)
 	noteController := controller.NewNotesController(db)
-	userController := controller.NewUsersController(db)
+	userController := controller.NewUserController(db)
+
+	r.POST("/login", authController.Login)
 
 	noteGroup := r.Group("/notes")
+	noteGroup.Use(auth.Middleware())
 	noteGroup.GET("/", noteController.Index)
 	noteGroup.POST("/", noteController.Store)
 	noteGroup.GET("/:id", noteController.Show)
