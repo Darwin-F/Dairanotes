@@ -33,6 +33,7 @@ func main() {
 	noteGroup.DELETE("/:id", noteController.Destroy)
 
 	userGroup := r.Group("/users")
+	userGroup.Use(auth.Middleware())
 	userGroup.POST("/", userController.Store)
 	userGroup.PATCH("/:id", userController.Update)
 	userGroup.DELETE("/:id", userController.Destroy)
