@@ -14,8 +14,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// JWT Middleware
-func Middleware() gin.HandlerFunc {
+func JwtMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
 		if tokenString == "" {
@@ -35,7 +34,6 @@ func Middleware() gin.HandlerFunc {
 			return
 		}
 
-		// Pass claims to the next handler
 		c.Set("claims", claims)
 		c.Next()
 	}
