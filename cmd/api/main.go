@@ -23,6 +23,7 @@ func main() {
 	userController := controller.NewUserController(db)
 
 	r.POST("/login", authController.Login)
+	r.POST("/register", userController.Store)
 
 	noteGroup := r.Group("/notes")
 	noteGroup.Use(auth.JwtMiddleware())
@@ -34,7 +35,6 @@ func main() {
 
 	userGroup := r.Group("/users")
 	userGroup.Use(auth.JwtMiddleware())
-	userGroup.POST("/", userController.Store)
 	userGroup.PATCH("/:id", userController.Update)
 	userGroup.DELETE("/:id", userController.Destroy)
 
