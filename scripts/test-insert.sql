@@ -1,0 +1,2 @@
+INSERT INTO dairanotes.users (username, email, password) VALUES ('tylp', 'tylpl@bsent.com', 'password');
+INSERT INTO dairanotes.notes (title, content, user_id) VALUES ('First Note', 'This is the content of the first note', 1);
