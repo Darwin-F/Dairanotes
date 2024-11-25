@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"dairanotes/internal/auth"
 	"dairanotes/internal/business"
 	"dairanotes/internal/entities"
 	"github.com/gin-gonic/gin"
@@ -10,25 +11,38 @@ import (
 
 type NotesController struct {
 	bn business.NoteBusinessInterface
+	us business.UserBusinessInterface
 }
 
 func NewNotesController(db *sqlx.DB) *NotesController {
 	methods := entities.NewNotesMethods(db)
 	bn := business.NewNoteBusiness(methods)
-	return &NotesController{bn: bn}
+	us := business.NewUserBusiness(entities.NewUserMethods(db))
+
+	return &NotesController{bn: bn, us: us}
 }
 
 func (nc *NotesController) Store(c *gin.Context) {
 	var newNote entities.Note
 
-	if err := c.BindJSON(&newNote); err != nil {
+	var err error
+
+	newNote.UserID, err = nc.GetUserIDFromContext(c)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": "Internal server error",
+		})
+		return
+	}
+
+	if err = c.BindJSON(&newNote); err != nil {
 		c.JSON(400, gin.H{
 			"error": "Bad request",
 		})
 		return
 	}
 
-	err := nc.bn.Store(c.Request.Context(), newNote)
+	err = nc.bn.Store(c.Request.Context(), newNote)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "Internal server error",
@@ -44,7 +58,15 @@ func (nc *NotesController) Store(c *gin.Context) {
 }
 
 func (nc *NotesController) Index(c *gin.Context) {
-	notes, err := nc.bn.Index(c.Request.Context(), 1) //TODO : get user id from token
+	userID, err := nc.GetUserIDFromContext(c)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": "Internal server error",
+		})
+		return
+	}
+
+	notes, err := nc.bn.Index(c.Request.Context(), userID)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "Internal server error",
@@ -64,10 +86,15 @@ func (nc *NotesController) Show(c *gin.Context) {
 		return
 	}
 
-	//TODO : get user id from token
-	//TODO : check if note belongs to user
+	userID, err := nc.GetUserIDFromContext(c)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": "Internal server error",
+		})
+		return
+	}
 
-	note, err := nc.bn.Show(c.Request.Context(), noteID)
+	note, err := nc.bn.Show(c.Request.Context(), noteID, userID)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "Internal server error",
@@ -98,15 +125,35 @@ func (nc *NotesController) Update(c *gin.Context) {
 	}
 
 	var updatedNote entities.Note
-	if err := c.BindJSON(&updatedNote); err != nil {
+	if err = c.BindJSON(&updatedNote); err != nil {
 		c.JSON(400, gin.H{
 			"error": "Bad request",
 		})
 		return
 	}
 
-	//TODO : get user id from token
-	//TODO : check if note belongs to user
+	userID, err := nc.GetUserIDFromContext(c)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": "Internal server error",
+		})
+		return
+	}
+
+	ok, err := nc.bn.CheckUserNote(c.Request.Context(), noteID, userID)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": "Internal server error",
+		})
+		return
+	}
+
+	if !ok {
+		c.JSON(403, gin.H{
+			"error": "Forbidden",
+		})
+		return
+	}
 
 	err = nc.bn.Update(c.Request.Context(), noteID, updatedNote)
 	if err != nil {
@@ -132,8 +179,28 @@ func (nc *NotesController) Destroy(c *gin.Context) {
 		return
 	}
 
-	//TODO : get user id from token
-	//TODO : check if note belongs to user
+	userID, err := nc.GetUserIDFromContext(c)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": "Internal server error",
+		})
+		return
+	}
+
+	ok, err := nc.bn.CheckUserNote(c.Request.Context(), noteID, userID)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": "Internal server error",
+		})
+		return
+	}
+
+	if !ok {
+		c.JSON(403, gin.H{
+			"error": "Forbidden",
+		})
+		return
+	}
 
 	err = nc.bn.Destroy(c.Request.Context(), noteID)
 	if err != nil {
@@ -148,4 +215,23 @@ func (nc *NotesController) Destroy(c *gin.Context) {
 	})
 
 	return
+}
+
+func (nc *NotesController) GetUserIDFromContext(c *gin.Context) (int64, error) {
+	rawClaims, exists := c.Get("claims")
+	if !exists {
+		return 0, nil
+	}
+
+	claims, ok := rawClaims.(*auth.Claims)
+	if !ok {
+		return 0, nil
+	}
+
+	userID, err := nc.us.GetUserID(c.Request.Context(), claims.Username)
+	if err != nil {
+		return 0, err
+	}
+
+	return userID, nil
 }
