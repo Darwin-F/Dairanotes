@@ -14,6 +14,7 @@ type UserMethodsInterface interface {
 	Update(ctx context.Context, userID int64, user User) error
 	Destroy(ctx context.Context, userID int64) error
 	GetPasswordByUserName(ctx context.Context, username string) (string, error)
+	GetUserID(ctx context.Context, username string) (int64, error)
 }
 
 type UserMethods struct {
@@ -62,4 +63,18 @@ func (u *UserMethods) GetPasswordByUserName(ctx context.Context, username string
 	}
 
 	return password, nil
+}
+
+func (u *UserMethods) GetUserID(ctx context.Context, username string) (int64, error) {
+	var userID uint64
+	err := u.DB.QueryRowContext(ctx, "SELECT id FROM users WHERE username = ?", username).Scan(&userID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return 0, err
+	}
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return 0, ErrUserNotFound
+	}
+
+	return userID, nil
 }

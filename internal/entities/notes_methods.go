@@ -8,9 +8,10 @@ import (
 type NotesMethodsInterface interface {
 	Store(ctx context.Context, notes Note) error
 	Index(ctx context.Context, userID int64) ([]Note, error)
-	Show(ctx context.Context, noteID int64) (*Note, error)
+	Show(ctx context.Context, noteID int64, userID int64) (*Note, error)
 	Update(ctx context.Context, noteID int64, notes Note) error
 	Destroy(ctx context.Context, noteID int64) error
+	CheckUserNote(ctx context.Context, noteID int64, userID int64) (ok bool, err error)
 }
 
 type NotesMethods struct {
@@ -53,10 +54,10 @@ func (n *NotesMethods) Index(ctx context.Context, userID int64) ([]Note, error) 
 	return notes, rows.Err()
 }
 
-func (n *NotesMethods) Show(ctx context.Context, noteID int64) (*Note, error) {
+func (n *NotesMethods) Show(ctx context.Context, noteID int64, userID int64) (*Note, error) {
 	var note Note
 
-	err := n.DB.QueryRowContext(ctx, "SELECT title,content  FROM notes WHERE id = ?", noteID).Scan(&note.Title, &note.Content)
+	err := n.DB.QueryRowContext(ctx, "SELECT title,content  FROM notes WHERE id = ? and user_id = ?", noteID, userID).Scan(&note.Title, &note.Content)
 	if err != nil {
 		return nil, err
 	}
@@ -80,4 +81,13 @@ func (n *NotesMethods) Destroy(ctx context.Context, noteID int64) error {
 	}
 
 	return nil
+}
+
+func (n *NotesMethods) CheckUserNote(ctx context.Context, noteID int64, userID int64) (ok bool, err error) {
+	err := n.DB.QueryRowContext(ctx, "SELECT 1 FROM notes WHERE id = ? AND user_id = ?", noteID, userID).Scan(&ok)
+	if err != nil {
+		return false, err
+	}
+
+	return ok, nil
 }
